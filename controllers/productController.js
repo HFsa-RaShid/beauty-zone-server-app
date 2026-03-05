@@ -2,13 +2,31 @@ const mongoose = require("mongoose");
 const Product = require("../models/product");
 const { sendSuccess, sendError } = require("../utils/responseHelper");
 
+
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12; 
+    const skip = (page - 1) * limit;
+
+    const totalProducts = await Product.countDocuments();
+
+    const products = await Product.find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
     if (products.length === 0) {
-        return sendSuccess(res, [], "No products found in database");
+        return sendSuccess(res, { products: [], totalPages: 0, currentPage: page }, "No products found");
     }
-    sendSuccess(res, products, "Products fetched successfully");
+    const responseData = {
+      products,
+      totalPages: Math.ceil(totalProducts / limit),
+      currentPage: page,
+      totalItems: totalProducts
+    };
+
+    sendSuccess(res, responseData, "Products fetched successfully");
   } catch (err) {
     sendError(res, err);
   }
