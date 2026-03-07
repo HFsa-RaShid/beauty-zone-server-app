@@ -84,4 +84,37 @@ const paymentFail = async (req, res) => {
     res.redirect(`http://localhost:5173/payment/fail`);
 };
 
-module.exports = { initiatePayment, paymentSuccess, paymentFail };
+
+const getOrders = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const totalOrders = await Payment.countDocuments();
+    
+    // ডাটাবেজ থেকে অর্ডার আনা
+    const orders = await Payment.find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }); // orderDate না থাকলে createdAt ব্যবহার করুন
+
+    // সরাসরি রেসপন্স পাঠান
+    res.status(200).json({
+      status: "success",
+      data: {
+        orders,
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(totalOrders / limit),
+          totalItems: totalOrders
+        }
+      }
+    });
+  } catch (err) {
+    console.error("Order Fetch Error:", err); // এররটি কনসোলে দেখুন
+    res.status(500).json({ status: "error", message: err.message });
+  }
+};
+
+module.exports = { initiatePayment, paymentSuccess, paymentFail, getOrders };
