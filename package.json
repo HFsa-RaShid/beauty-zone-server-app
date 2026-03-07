@@ -20,7 +20,8 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.3",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "sslcommerz-lts": "^1.2.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
