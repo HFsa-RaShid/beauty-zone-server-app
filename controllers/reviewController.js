@@ -1,26 +1,53 @@
-const Reviews = require('../models/reviews');
 const mongoose = require("mongoose");
+const Review = require("../models/reviews");
+
+const getReviewsByProduct = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const page = parseInt(req.query.page) || 1; 
+    const limit = 4; 
+    const skip = (page - 1) * limit;
+
+    const reviews = await Review.find({ productId })
+      .sort({ date: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalReviews = await Review.countDocuments({ productId });
+
+    res.json({
+      reviews,
+      currentPage: page,
+      totalPages: Math.ceil(totalReviews / limit),
+      totalReviews
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 const getAllReviews = async (req, res) => {
-    try {
-        const review = await Reviews.find().sort({ createdAt: -1 }); 
-        res.status(200).json(review);
-    } catch (error) {
-        console.log("Error:", error.message);
-        res.status(500).json({ error: error.message });
-    }
+  try {
+    const reviews = await Review.find().sort({ date: -1 });
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 
 const createReview = async (req, res) => {
-    try {
-        const newReview = await Reviews.create(req.body);
-        res.status(201).json(newReview);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
+  try {
+    const newReview = new Review(req.body);
+    const savedReview = await newReview.save();
+    res.status(201).json(savedReview);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 };
 
-module.exports = {
-    getAllReviews,
-    createReview
+module.exports = { 
+  getReviewsByProduct, 
+  getAllReviews, 
+  createReview 
 };
