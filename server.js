@@ -14,10 +14,9 @@ connectDB();
 app.use(
   cors({
     origin: [
-      "http://127.0.0.1:5500",
-      "http://localhost:5001",
+      // "http://127.0.0.1:5500",
+      // "http://localhost:5001",
       "http://localhost:5173",
-      "https://beauty-zone-clientapp-ew9c.vercel.app",
       "https://beautyzone-react-client.vercel.app",
     ],
     credentials: true,
@@ -35,7 +34,8 @@ app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api", require("./routes/reviewRoutes"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
 
-const port = process.env.PORT || 5001;
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+app.get("/", (req, res) => {
+  res.send("Beauty Zone API is running...");
 });
+
+module.exports = app;
