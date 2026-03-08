@@ -11,16 +11,18 @@ const path = require("path");
 
 connectDB();
 
-
-app.use(cors({
-  origin: [
-        'http://127.0.0.1:5500', 
-        'http://localhost:5500',
-        'http://localhost:5173' ,
-        'https://beauty-zone-clientapp-ew9c.vercel.app' 
+app.use(
+  cors({
+    origin: [
+      "http://127.0.0.1:5500",
+      "http://localhost:5001",
+      "http://localhost:5173",
+      "https://beauty-zone-clientapp-ew9c.vercel.app",
+      "https://beautyzone-react-client.vercel.app",
     ],
-    credentials: true
-}));
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
